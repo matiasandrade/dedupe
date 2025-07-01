@@ -173,6 +173,51 @@ def main():
             print(f"Image 1: {img1_path}")
             print(f"Image 2: {img2_path}")
 
+            # Display detailed image information in terminal
+            try:
+                with Image.open(img1_path) as img1, Image.open(img2_path) as img2:
+                    print("\n" + "="*80)
+                    print("IMAGE COMPARISON DETAILS")
+                    print("="*80)
+                    
+                    # Image 1 details
+                    img1_size = os.path.getsize(img1_path)
+                    print(f"Image 1: {img1_path.name}")
+                    print(f"  Resolution: {img1.width} x {img1.height} pixels")
+                    print(f"  File size:  {img1_size/1024:.1f} KB ({img1_size:,} bytes)")
+                    print(f"  Format:     {img1.format}")
+                    print(f"  Mode:       {img1.mode}")
+                    
+                    print()
+                    
+                    # Image 2 details
+                    img2_size = os.path.getsize(img2_path)
+                    print(f"Image 2: {img2_path.name}")
+                    print(f"  Resolution: {img2.width} x {img2.height} pixels")
+                    print(f"  File size:  {img2_size/1024:.1f} KB ({img2_size:,} bytes)")
+                    print(f"  Format:     {img2.format}")
+                    print(f"  Mode:       {img2.mode}")
+                    
+                    print()
+                    
+                    # Comparison metrics
+                    area1 = img1.width * img1.height
+                    area2 = img2.width * img2.height
+                    size_diff = abs(img1_size - img2_size)
+                    size_ratio = max(img1_size, img2_size) / min(img1_size, img2_size)
+                    
+                    print("COMPARISON METRICS:")
+                    print(f"  Similarity score: {similarity:.3f}")
+                    print(f"  Image 1 area:     {area1:,} pixels")
+                    print(f"  Image 2 area:     {area2:,} pixels")
+                    print(f"  Size difference:  {size_diff/1024:.1f} KB")
+                    print(f"  Size ratio:       {size_ratio:.2f}:1")
+                    print("="*80)
+                    
+            except Exception as e:
+                print(f"Error reading image details: {e}")
+
+            # Still try to show visual comparison if viu is available
             try:
                 # Verify files still exist before creating comparison
                 if not img1_path.exists() or not img2_path.exists():
@@ -184,11 +229,21 @@ def main():
                 )
                 subprocess.run(["viu", combined_image], check=True)
                 os.unlink(combined_image)
+                
+                # Print concise 2-line summary below images
+                with Image.open(img1_path) as img1, Image.open(img2_path) as img2:
+                    img1_size = os.path.getsize(img1_path)
+                    img2_size = os.path.getsize(img2_path)
+                    area1 = img1.width * img1.height
+                    area2 = img2.width * img2.height
+                    size_ratio = max(img1_size, img2_size) / min(img1_size, img2_size)
+                    
+                    print(f"Summary: {img1.width}x{img1.height} ({img1_size/1024:.1f}KB) vs {img2.width}x{img2.height} ({img2_size/1024:.1f}KB)")
+                    print(f"         Similarity: {similarity:.3f} | Size ratio: {size_ratio:.2f}:1 | Area diff: {abs(area1-area2)/1000:.0f}k pixels")
             except subprocess.CalledProcessError:
-                print("Error: viu not installed or failed to display images")
+                print("Note: viu not installed or failed to display images - using text info only")
             except Exception as e:
-                print(f"Error processing images: {e}")
-                continue
+                print(f"Error processing visual comparison: {e}")
 
             while True:
                 choice = input(
