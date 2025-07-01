@@ -247,8 +247,8 @@ def main():
 
             while True:
                 choice = input(
-                    "\nKeep which image? [1]first, [2]second, [s]kip, [q]uit: "
-                ).lower()
+                    "\nKeep which image? [1]first, [2]second, [s]kip (or just press Enter), [q]uit: "
+                ).lower().strip()
                 
                 # Verify files still exist before taking action
                 if not img1_path.exists() or not img2_path.exists():
@@ -263,7 +263,7 @@ def main():
                     if img1_path.exists():
                         move_to_archive(img1_path, archive_dir)
                     break
-                elif choice == "s":
+                elif choice == "s" or choice == "":
                     break
                 elif choice == "q":
                     return
