@@ -36,7 +36,7 @@ def get_similarity_dict(target_dir: Path) -> Dict[str, List[Tuple[str, float]]]:
         for f in target_dir.iterdir():
             if f.suffix.lower() in IMAGE_EXTENSIONS:
                 dest = temp_path / f.name
-                shutil.copy2(f, dest)
+                shutil.copy(f, dest)
                 image_files.append(str(dest))
 
         # Find duplicates across all images
